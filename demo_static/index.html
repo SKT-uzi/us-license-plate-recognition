@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>US License Plate Recognition Demo</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #08101d;
+      --panel: #101c2c;
+      --panel-2: #142338;
+      --line: #253955;
+      --text: #eef5ff;
+      --muted: #9fb0c8;
+      --mint: #2fd6b2;
+      --amber: #ffb547;
+      --danger: #ff6b78;
+      --shadow: 0 22px 70px rgba(0, 0, 0, .32);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, "Microsoft YaHei", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(47,214,178,.13), transparent 32rem),
+        radial-gradient(circle at 90% 10%, rgba(255,181,71,.12), transparent 30rem),
+        var(--bg);
+    }
+    button, input { font: inherit; }
+    .shell { width: min(1480px, calc(100% - 36px)); margin: 0 auto; padding: 34px 0 64px; }
+    header { display: flex; gap: 24px; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+    .eyebrow { color: var(--mint); font-size: 13px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    h1 { margin: 8px 0 8px; font-size: clamp(28px, 4vw, 48px); line-height: 1.05; letter-spacing: -.04em; }
+    .subtitle { margin: 0; max-width: 760px; color: var(--muted); line-height: 1.7; }
+    .badge {
+      flex: none; padding: 9px 13px; border: 1px solid rgba(47,214,178,.35);
+      border-radius: 999px; color: var(--mint); background: rgba(47,214,178,.08);
+      font-size: 13px; font-weight: 750;
+    }
+    .panel { background: rgba(16,28,44,.91); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); }
+    .upload-panel { padding: 18px; display: grid; grid-template-columns: minmax(0,1fr) 340px; gap: 18px; margin-bottom: 20px; }
+    .dropzone {
+      min-height: 210px; display: grid; place-items: center; position: relative; overflow: hidden;
+      border: 1.5px dashed #3a5475; border-radius: 15px; background: rgba(8,16,29,.52);
+      cursor: pointer; transition: .2s ease;
+    }
+    .dropzone:hover, .dropzone.dragging { border-color: var(--mint); background: rgba(47,214,178,.06); transform: translateY(-1px); }
+    .dropzone.has-image .drop-copy { opacity: 0; pointer-events: none; }
+    .drop-copy { text-align: center; padding: 30px; transition: opacity .2s; }
+    .upload-icon { width: 50px; height: 50px; margin: 0 auto 12px; border-radius: 15px; display: grid; place-items: center; color: var(--mint); background: rgba(47,214,178,.1); font-size: 25px; }
+    .drop-copy strong { display: block; font-size: 18px; margin-bottom: 7px; }
+    .drop-copy span { color: var(--muted); font-size: 13px; }
+    #preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: none; background: #050a12; }
+    #fileInput { display: none; }
+    .controls { padding: 6px 4px; display: flex; flex-direction: column; justify-content: center; }
+    .controls > label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .mode-fieldset { margin: 0 0 18px; padding: 0; border: 0; }
+    .mode-fieldset legend { margin-bottom: 8px; color: var(--muted); font-size: 13px; }
+    .mode-picker { display: grid; gap: 8px; }
+    .mode-option { position: relative; cursor: pointer; }
+    .mode-option input { position: absolute; opacity: 0; pointer-events: none; }
+    .mode-copy {
+      display: block; padding: 11px 12px; border: 1px solid var(--line); border-radius: 11px;
+      background: rgba(8,16,29,.48); transition: .18s ease;
+    }
+    .mode-copy strong { display: block; color: var(--text); font-size: 13px; }
+    .mode-copy small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .mode-option input:checked + .mode-copy { border-color: var(--mint); background: rgba(47,214,178,.09); box-shadow: inset 0 0 0 1px rgba(47,214,178,.2); }
+    .range-row { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    input[type="range"] { width: 100%; accent-color: var(--mint); }
+    #confValue { min-width: 48px; text-align: center; color: var(--mint); font-weight: 800; font-variant-numeric: tabular-nums; }
+    .run-button {
+      border: 0; border-radius: 12px; padding: 13px 18px; font-weight: 850; color: #06131d;
+      background: linear-gradient(135deg, var(--mint), #6de1ff); cursor: pointer; transition: .2s;
+    }
+    .run-button:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); }
+    .run-button:disabled { opacity: .38; cursor: not-allowed; }
+    .help { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 12px 2px 0; }
+    .status { min-height: 24px; margin: 0 3px 14px; color: var(--muted); font-size: 14px; }
+    .status.working { color: var(--amber); }
+    .status.error { color: var(--danger); }
+    .model-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 20px; }
+    .model-card { overflow: hidden; }
+    .model-card.original { --accent: var(--mint); }
+    .model-card.finetuned { --accent: var(--amber); }
+    .card-head { padding: 17px 18px; display: flex; gap: 12px; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
+    .card-title { display: flex; align-items: center; gap: 10px; font-weight: 850; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 18px var(--accent); }
+    .metrics { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
+    .metric { background: rgba(255,255,255,.045); border: 1px solid var(--line); border-radius: 999px; padding: 5px 9px; color: var(--muted); font-size: 12px; }
+    .metric strong { color: var(--text); }
+    .image-stage { min-height: 350px; background: #050a12; display: grid; place-items: center; }
+    .image-stage img { display: block; width: 100%; max-height: 650px; object-fit: contain; }
+    .crops { padding: 16px 18px 18px; border-top: 1px solid var(--line); }
+    .crops h3, .details h2 { margin: 0 0 12px; font-size: 14px; color: var(--muted); font-weight: 750; }
+    .crop-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; min-height: 70px; }
+    .crop { margin: 0; padding: 9px; border: 1px solid var(--line); background: rgba(8,16,29,.48); border-radius: 11px; }
+    .crop img { width: 100%; min-height: 50px; max-height: 130px; object-fit: contain; display: block; }
+    .crop figcaption { color: var(--muted); font-size: 11px; margin-top: 7px; }
+    .ocr-value { margin-top: 9px; color: var(--accent); font-size: 23px; font-weight: 900; letter-spacing: .06em; }
+    .ocr-meta { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .ocr-error { color: var(--danger); }
+    .direct-result { margin-bottom: 20px; overflow: hidden; }
+    .direct-grid { display: grid; grid-template-columns: minmax(280px, .9fr) minmax(320px, 1.1fr); }
+    .direct-image { min-height: 300px; padding: 18px; display: grid; place-items: center; background: #050a12; }
+    .direct-image img { max-width: 100%; max-height: 520px; object-fit: contain; border-radius: 12px; }
+    .direct-copy { padding: 28px; display: flex; flex-direction: column; justify-content: center; }
+    .result-label { margin-top: 12px; color: var(--muted); font-size: 14px; font-weight: 750; }
+    .direct-copy h2 { margin: 8px 0 8px; font-size: clamp(32px, 5vw, 58px); line-height: 1; letter-spacing: .04em; color: var(--mint); white-space: nowrap; }
+    .direct-copy h2.invalid { color: var(--danger); font-size: clamp(28px, 4vw, 48px); letter-spacing: 0; }
+    .state-value { margin: 7px 0 2px; color: var(--amber); font-size: clamp(24px, 3vw, 38px); font-weight: 900; }
+    .state-value.unreliable { color: var(--danger); font-size: 22px; }
+    .direct-verdict { margin: 0 0 20px; color: var(--muted); line-height: 1.7; }
+    .direct-metrics { display: flex; flex-wrap: wrap; gap: 8px; }
+    .empty { color: var(--muted); display: grid; place-items: center; min-height: 65px; font-size: 13px; }
+    .details { margin-top: 20px; padding: 18px; overflow: hidden; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 1380px; font-size: 13px; }
+    th, td { text-align: left; border-bottom: 1px solid var(--line); padding: 11px 10px; vertical-align: top; }
+    th { color: var(--muted); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+    td { font-variant-numeric: tabular-nums; }
+    .note { margin-top: 20px; padding: 15px 18px; color: var(--muted); line-height: 1.65; font-size: 13px; }
+    .note strong { color: var(--text); }
+    [hidden] { display: none !important; }
+    @media (max-width: 900px) {
+      header { display: block; }
+      .badge { display: inline-block; margin-top: 16px; }
+      .upload-panel, .model-grid { grid-template-columns: 1fr; }
+      .direct-grid { grid-template-columns: 1fr; }
+      .controls { padding: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <div class="eyebrow">US Plate Pose · Local Compare</div>
+        <h1>US License Plate Recognition Demo</h1>
+        <p class="subtitle">Full pipeline: four-corner pose detection and rectification → 51-class state classification → ensemble OCR. Cropped plate images skip pose detection.</p>
+      </div>
+      <div class="badge">CUDA or CPU · Local Inference</div>
+    </header>
+
+    <section class="panel upload-panel">
+      <label class="dropzone" id="dropzone" for="fileInput">
+        <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,image/bmp">
+        <img id="preview" alt="Selected image preview">
+        <div class="drop-copy">
+          <div class="upload-icon">＋</div>
+          <strong>Click or drop a vehicle image</strong>
+          <span>JPG, PNG, WebP, or BMP; up to 20 MB</span>
+        </div>
+      </label>
+      <div class="controls">
+        <fieldset class="mode-fieldset">
+          <legend>Input image type</legend>
+          <div class="mode-picker">
+            <label class="mode-option">
+              <input type="radio" name="mode" value="auto" checked>
+              <span class="mode-copy">
+                <strong>Auto-detect (recommended)</strong>
+                <small>Detect the input type and return the state and final plate number</small>
+              </span>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="mode" value="vehicle">
+              <span class="mode-copy">
+                <strong>Full vehicle image</strong>
+                <small>YOLO corners → rectification → state classifier → OCR</small>
+              </span>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="mode" value="plate">
+              <span class="mode-copy">
+                <strong>Cropped plate</strong>
+                <small>Skip YOLO and classify the state before reading letters and digits</small>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+        <div id="vehicleControls">
+          <label for="confRange">Detection confidence threshold</label>
+          <div class="range-row">
+            <input id="confRange" type="range" min="0.05" max="0.90" step="0.05" value="0.25">
+            <output id="confValue">0.25</output>
+          </div>
+        </div>
+        <button class="run-button" id="runButton" type="button" disabled>Recognize Plate</button>
+        <p class="help" id="modeHelp">The system detects the input type and filters month-sticker text automatically.</p>
+      </div>
+    </section>
+
+    <p class="status" id="status">Select a US vehicle image that was not used for training.</p>
+
+    <section class="panel direct-result" id="directResult" hidden>
+      <div class="direct-grid">
+        <div class="direct-image"><img id="directImage" alt="Cropped plate input"></div>
+        <div class="direct-copy">
+          <div class="eyebrow" id="resultEyebrow">Recognition Complete</div>
+          <div class="result-label">State</div>
+          <div class="state-value" id="directState">—</div>
+          <div class="result-label">Final Plate Number</div>
+          <h2 id="directText">—</h2>
+          <p class="direct-verdict" id="directVerdict"></p>
+          <div class="direct-metrics">
+            <span class="metric">OCR confidence <strong id="directScore">0.0000</strong></span>
+            <span class="metric">OCR latency <strong id="directTime">0 ms</strong></span>
+            <span class="metric">State confidence <strong id="stateScore">0.0000</strong></span>
+            <span class="metric">State latency <strong id="stateTime">0 ms</strong></span>
+            <span class="metric">Recognition path <strong id="directSource">—</strong></span>
+            <span class="metric">Acceptance threshold <strong>0.50</strong></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="results" hidden>
+      <div class="model-grid">
+        <article class="panel model-card original">
+          <div class="card-head">
+            <div class="card-title"><span class="dot"></span><span id="originalName">Baseline Model</span></div>
+            <div class="metrics">
+              <span class="metric">Plates <strong id="originalCount">0</strong></span>
+              <span class="metric">YOLO <strong id="originalTime">0 ms</strong></span>
+              <span class="metric">State classifier <strong id="originalStateTime">0 ms</strong></span>
+              <span class="metric">OCR <strong id="originalOcrTime">0 ms</strong></span>
+            </div>
+          </div>
+          <div class="image-stage"><img id="originalImage" alt="Baseline model detections"></div>
+          <div class="crops">
+            <h3>Rectified Plates + State + OCR Number</h3>
+            <div class="crop-list" id="originalCrops"></div>
+          </div>
+        </article>
+
+        <article class="panel model-card finetuned">
+          <div class="card-head">
+            <div class="card-title"><span class="dot"></span><span id="finetunedName">Fine-tuned Model</span></div>
+            <div class="metrics">
+              <span class="metric">Plates <strong id="finetunedCount">0</strong></span>
+              <span class="metric">YOLO <strong id="finetunedTime">0 ms</strong></span>
+              <span class="metric">State classifier <strong id="finetunedStateTime">0 ms</strong></span>
+              <span class="metric">OCR <strong id="finetunedOcrTime">0 ms</strong></span>
+            </div>
+          </div>
+          <div class="image-stage"><img id="finetunedImage" alt="Fine-tuned model detections"></div>
+          <div class="crops">
+            <h3>Rectified Plates + State + OCR Number</h3>
+            <div class="crop-list" id="finetunedCrops"></div>
+          </div>
+        </article>
+      </div>
+
+      <section class="panel details">
+        <h2>Detection Details</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Model</th><th>Plate</th><th>YOLO confidence</th><th>State</th><th>State confidence</th><th>OCR number</th><th>OCR confidence</th><th>Bounding box x1,y1,x2,y2</th><th>Corners: top-left / top-right / bottom-right / bottom-left</th></tr></thead>
+            <tbody id="detailsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+
+    <aside class="panel note">
+      <strong>Tip:</strong> Keep “Auto-detect” for most images. If no plate is found at 640 px, the app retries at 1280 px. It evaluates both the original and edge-expanded crops to avoid cutting off the first or last character. State and OCR results are only reported after a plate is localized; low-resolution state predictions are clearly marked as estimates.
+    </aside>
+  </main>
+
+  <script>
+    const input = document.querySelector("#fileInput");
+    const dropzone = document.querySelector("#dropzone");
+    const preview = document.querySelector("#preview");
+    const runButton = document.querySelector("#runButton");
+    const status = document.querySelector("#status");
+    const results = document.querySelector("#results");
+    const directResult = document.querySelector("#directResult");
+    const vehicleControls = document.querySelector("#vehicleControls");
+    const modeHelp = document.querySelector("#modeHelp");
+    const modeInputs = [...document.querySelectorAll('input[name="mode"]')];
+    const confRange = document.querySelector("#confRange");
+    const confValue = document.querySelector("#confValue");
+    let selectedFile = null;
+    let previewUrl = null;
+
+    const selectedMode = () => modeInputs.find(input => input.checked).value;
+
+    function updateModeUI() {
+      const mode = selectedMode();
+      const isPlate = mode === "plate";
+      const isAuto = mode === "auto";
+      vehicleControls.hidden = isPlate || isAuto;
+      runButton.textContent = isPlate ? "Recognize State and Plate" : "Recognize State and Plate";
+      modeHelp.textContent = isAuto
+        ? "The system will detect the input type, localize the plate, classify the state, and run OCR."
+        : isPlate
+          ? "Use this when the image is almost entirely a plate; state classification and OCR run directly."
+          : "Use this for a full vehicle or a large vehicle region; both pose models, state classification, and OCR details are shown.";
+      results.hidden = true;
+      directResult.hidden = true;
+      if (selectedFile) {
+        setStatus(
+          isPlate
+            ? `Selected ${selectedFile.name}; state classification and OCR will run directly.`
+            : isAuto
+              ? `Selected ${selectedFile.name}; the app will detect the input type and return the state and final plate number.`
+              : `Selected ${selectedFile.name}; the app will localize the plate and return the state and final number.`,
+          ""
+        );
+      }
+    }
+
+    modeInputs.forEach(input => input.addEventListener("change", updateModeUI));
+    confRange.addEventListener("input", () => { confValue.value = Number(confRange.value).toFixed(2); });
+    input.addEventListener("change", () => selectFile(input.files[0]));
+    ["dragenter", "dragover"].forEach(type => dropzone.addEventListener(type, event => {
+      event.preventDefault(); dropzone.classList.add("dragging");
+    }));
+    ["dragleave", "drop"].forEach(type => dropzone.addEventListener(type, event => {
+      event.preventDefault(); dropzone.classList.remove("dragging");
+    }));
+    dropzone.addEventListener("drop", event => selectFile(event.dataTransfer.files[0]));
+
+    function selectFile(file) {
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        setStatus("Select an image file.", "error"); return;
+      }
+      selectedFile = file;
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = URL.createObjectURL(file);
+      preview.src = previewUrl;
+      preview.style.display = "block";
+      dropzone.classList.add("has-image");
+      runButton.disabled = false;
+      results.hidden = true;
+      directResult.hidden = true;
+      updateModeUI();
+    }
+
+    function setStatus(message, kind) {
+      status.textContent = message;
+      status.className = `status ${kind || ""}`;
+    }
+
+    function renderCrops(container, crops) {
+      container.replaceChildren();
+      if (!crops.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No rectifiable plate was detected; state classification and OCR were not run";
+        container.appendChild(empty);
+        return;
+      }
+      crops.forEach(crop => {
+        const figure = document.createElement("figure");
+        figure.className = "crop";
+        const image = document.createElement("img");
+        image.src = crop.image;
+        image.alt = crop.label;
+        const caption = document.createElement("figcaption");
+        caption.textContent = crop.label;
+        const state = crop.state || {};
+        const stateValue = document.createElement("div");
+        stateValue.className = `state-value ${state.accepted ? "" : "unreliable"}`;
+        const stateEvidenceSuffix = state.source === "state_name_ocr_override"
+          ? ` (corrected by state-name OCR; classifier predicted ${state.classifier_display_name || "unknown"})`
+          : (state.ocr_verified ? " (verified by state-name OCR)" : "");
+        stateValue.textContent = state.accepted
+          ? `State: ${state.display_name}${stateEvidenceSuffix}`
+          : (state.display_name ? `State appearance estimate: ${state.display_name}` : "State not recognized");
+        const stateMeta = document.createElement("div");
+        stateMeta.className = "ocr-meta";
+        const stateCandidates = (state.top5 || [])
+          .slice(0, 3)
+          .map(item => `${item.display_name} ${Number(item.score || 0).toFixed(3)}`)
+          .join(" / ");
+        stateMeta.textContent = crop.state_error
+          ? crop.state_error
+          : (state.fusion_reason
+            ? state.fusion_reason
+            : `${state.quality_reason ? `${state.quality_reason} · ` : ""}`
+              + `${stateCandidates ? `Appearance candidates: ${stateCandidates} · ` : ""}`
+              + `State confidence ${Number(state.score || 0).toFixed(4)} · ${Number(state.inference_ms || 0).toFixed(2)} ms`);
+        const ocrValue = document.createElement("div");
+        const lowConfidence = crop.ocr_text && crop.ocr_score < 0.5;
+        const reviewRequired = Boolean(crop.ocr_review_required);
+        ocrValue.className = `ocr-value ${(crop.ocr_error || lowConfidence || reviewRequired) ? "ocr-error" : ""}`;
+        ocrValue.textContent = crop.ocr_error
+          ? "OCR unavailable"
+          : lowConfidence
+            ? "Recognition failed"
+            : (crop.ocr_text
+              ? `${crop.ocr_text}${reviewRequired ? " (review required)" : ""}`
+              : "Not recognized");
+        const ocrMeta = document.createElement("div");
+        ocrMeta.className = "ocr-meta";
+        ocrMeta.textContent = crop.ocr_error
+          ? crop.ocr_error
+          : `${lowConfidence ? `Model guess ${crop.ocr_text} · ` : ""}${crop.ocr_selection_reason ? `${crop.ocr_selection_reason} · ` : ""}OCR confidence ${crop.ocr_score.toFixed(4)} · ${crop.ocr_ms.toFixed(2)} ms`;
+        figure.append(image, caption, stateValue, stateMeta, ocrValue, ocrMeta);
+        container.appendChild(figure);
+      });
+    }
+
+    function renderModel(model) {
+      document.querySelector(`#${model.id}Name`).textContent = model.name;
+      document.querySelector(`#${model.id}Count`).textContent = model.detections;
+      document.querySelector(`#${model.id}Time`).textContent =
+        `${model.inference_ms.toFixed(2)} ms${model.fallback_used ? ` (includes ${model.imgsz} px retry)` : ""}`;
+      document.querySelector(`#${model.id}StateTime`).textContent = `${model.state_ms.toFixed(2)} ms`;
+      document.querySelector(`#${model.id}OcrTime`).textContent = `${model.ocr_ms.toFixed(2)} ms`;
+      document.querySelector(`#${model.id}Image`).src = model.annotated;
+      renderCrops(document.querySelector(`#${model.id}Crops`), model.crops);
+    }
+
+    function renderRows(rows) {
+      const body = document.querySelector("#detailsBody");
+      body.replaceChildren();
+      if (!rows.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 9;
+        td.className = "empty";
+        td.textContent = "Neither model detected a plate";
+        tr.appendChild(td);
+        body.appendChild(tr);
+        return;
+      }
+      rows.forEach(row => {
+        const tr = document.createElement("tr");
+        const values = [
+          row.model,
+          row.plate,
+          row.confidence.toFixed(4),
+          row.state_error
+            ? "State classifier unavailable"
+            : (row.state_name
+              ? `${row.state_accepted ? "" : "Appearance estimate: "}${row.state_name}`
+              : "Not recognized"),
+          (row.state_error || !row.state_name) ? "—" : row.state_score.toFixed(4),
+          row.ocr_error
+            ? "OCR unavailable"
+            : (row.ocr_text
+              ? `${row.ocr_text}${row.ocr_review_required ? " (review required)" : ""}`
+              : "Not recognized"),
+          row.ocr_error ? "—" : row.ocr_score.toFixed(4),
+          row.box.join(", "),
+          row.keypoints.map(point => `${point.name}(${point.x}, ${point.y})`).join(" / ") || "No keypoints"
+        ];
+        values.forEach(value => {
+          const td = document.createElement("td");
+          td.textContent = value;
+          tr.appendChild(td);
+        });
+        body.appendChild(tr);
+      });
+    }
+
+    function renderDirect(payload) {
+      const ocr = payload.final || payload.ocr;
+      const state = ocr.state || payload.state || {};
+      document.querySelector("#directImage").src = payload.image.data_uri;
+      const text = document.querySelector("#directText");
+      const verdict = document.querySelector("#directVerdict");
+      const stateText = document.querySelector("#directState");
+      const stateEvidenceSuffix = state.source === "state_name_ocr_override"
+        ? ` (corrected by state-name OCR; classifier predicted ${state.classifier_display_name || "unknown"})`
+        : (state.ocr_verified ? " (verified by state-name OCR)" : "");
+      stateText.classList.toggle("unreliable", !state.accepted);
+      stateText.textContent = state.accepted
+        ? `${state.display_name}${stateEvidenceSuffix}`
+        : (state.display_name ? `Appearance estimate: ${state.display_name}` : "Not recognized");
+      const reviewRequired = Boolean(ocr.review_required);
+      text.classList.toggle("invalid", !ocr.accepted || reviewRequired);
+      if (ocr.accepted) {
+        text.textContent = `${ocr.text}${reviewRequired ? " (review required)" : ""}`;
+        verdict.textContent = reviewRequired
+          ? (ocr.selection_reason || "The OCR models disagree; review the number manually.")
+          : (ocr.selection_reason || ocr.reason || "At least two independent OCR models support this number.");
+      } else {
+        text.textContent = "Recognition failed";
+        verdict.textContent = ocr.reason || (ocr.text
+          ? `The model guessed “${ocr.text}”, but confidence is too low to report it as final.`
+          : "OCR did not read valid letters or digits.");
+      }
+      document.querySelector("#resultEyebrow").textContent = ocr.accepted
+        ? (reviewRequired ? "Recognition complete · review required" : "Recognition complete · models agree")
+        : "No reliable result";
+      document.querySelector("#directScore").textContent = ocr.score.toFixed(4);
+      document.querySelector("#directTime").textContent = `${ocr.inference_ms.toFixed(2)} ms`;
+      document.querySelector("#stateScore").textContent = Number(state.score || 0).toFixed(4);
+      document.querySelector("#stateTime").textContent = `${Number(state.inference_ms || 0).toFixed(2)} ms`;
+      document.querySelector("#directSource").textContent = ocr.source_label || "Direct OCR on the full plate";
+      directResult.hidden = false;
+    }
+
+    runButton.addEventListener("click", async () => {
+      if (!selectedFile) return;
+      const mode = selectedMode();
+      const isPlate = mode === "plate";
+      runButton.disabled = true;
+      results.hidden = true;
+      directResult.hidden = true;
+      setStatus(
+        isPlate
+          ? "Skipping YOLO; classifying the state and reading the number with plate OCR + PaddleOCR…"
+          : "Localizing the plate, classifying the state, and reading the final plate number…",
+        "working"
+      );
+      const form = new FormData();
+      form.append("image", selectedFile);
+      form.append("conf", confRange.value);
+      try {
+        const endpoint = isPlate ? "/api/ocr" : "/api/auto";
+        const response = await fetch(endpoint, { method: "POST", body: form });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || "Inference failed");
+        if (isPlate) {
+          renderDirect(payload);
+          const stateName = payload.state?.accepted ? payload.state.display_name : "State not reliably recognized";
+          setStatus(
+            `Recognition complete: ${stateName}; plate=${payload.ocr.text || "not recognized"}${payload.ocr.review_required ? " (review required)" : ""}`,
+            (payload.ocr.accepted && !payload.ocr.review_required) ? "" : "error"
+          );
+          directResult.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          renderDirect(payload);
+          const comparison = payload.comparison;
+          if (comparison) {
+            comparison.models.forEach(renderModel);
+            renderRows(comparison.rows);
+            results.hidden = false;
+          }
+          const inputLabel = payload.input_type === "cropped_plate" ? "cropped plate" : "full vehicle";
+          const stateName = payload.final.state?.accepted ? payload.final.state.display_name : "State not reliably recognized";
+          setStatus(
+            `Recognition complete: detected a ${inputLabel}; state=${stateName}; final plate=${payload.final.text || "not recognized"}${payload.final.review_required ? " (review required)" : ""}`,
+            (payload.final.accepted && !payload.final.review_required) ? "" : "error"
+          );
+          directResult.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      } catch (error) {
+        setStatus(error.message || String(error), "error");
+      } finally {
+        runButton.disabled = false;
+      }
+    });
+
+    updateModeUI();
+  </script>
+</body>
+</html>

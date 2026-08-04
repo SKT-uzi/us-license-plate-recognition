@@ -1,0 +1,11 @@
+# Replace this path with the root of your YOLO pose dataset.
+path: /absolute/path/to/coco-usplate-keypoint-datasets
+train: images/train
+val: images/val
+
+# Corner order: top-left, top-right, bottom-right, bottom-left.
+kpt_shape: [4, 3]
+flip_idx: [1, 0, 3, 2]
+
+names:
+  0: license_plate

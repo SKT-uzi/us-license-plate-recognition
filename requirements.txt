@@ -1,0 +1,10 @@
+# Install a CUDA-enabled PyTorch build separately when GPU inference is required.
+ultralytics>=8.3,<9
+opencv-python>=4.8,<5
+numpy>=1.23,<3
+Pillow>=10,<12
+PyYAML>=6,<7
+paddleocr>=3,<4
+fast-plate-ocr>=1,<2
+onnxruntime>=1.17,<2
+matplotlib>=3.7,<4

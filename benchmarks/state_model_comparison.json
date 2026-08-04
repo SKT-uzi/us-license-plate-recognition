@@ -1,0 +1,414 @@
+{
+  "old_model": "baseline state classifier",
+  "new_model": "road-augmented state classifier (models/state_classifier.pt)",
+  "clean_test": "clean held-out test split",
+  "road_degraded_test": "synthetically road-degraded held-out test split",
+  "domains": {
+    "clean": {
+      "old": {
+        "images": 1971,
+        "top1": 0.935566,
+        "top5": 0.970573,
+        "mean_top1_confidence": 0.946711,
+        "thresholds": {
+          "0.35": {
+            "accepted": 1939,
+            "coverage": 0.983765,
+            "accepted_accuracy": 0.947396,
+            "accepted_errors": 102
+          },
+          "0.50": {
+            "accepted": 1895,
+            "coverage": 0.961441,
+            "accepted_accuracy": 0.964116,
+            "accepted_errors": 68
+          },
+          "0.60": {
+            "accepted": 1865,
+            "coverage": 0.94622,
+            "accepted_accuracy": 0.971046,
+            "accepted_errors": 54
+          },
+          "0.70": {
+            "accepted": 1822,
+            "coverage": 0.924404,
+            "accepted_accuracy": 0.982437,
+            "accepted_errors": 32
+          },
+          "0.80": {
+            "accepted": 1795,
+            "coverage": 0.910705,
+            "accepted_accuracy": 0.988858,
+            "accepted_errors": 20
+          },
+          "0.90": {
+            "accepted": 1729,
+            "coverage": 0.87722,
+            "accepted_accuracy": 0.99306,
+            "accepted_errors": 12
+          }
+        },
+        "per_class_top1": {
+          "Alabama": 0.933333,
+          "Alaska": 1.0,
+          "Arizona": 0.885714,
+          "Arkansas": 0.916667,
+          "California": 0.957447,
+          "Colorado": 0.962264,
+          "Connecticut": 0.971429,
+          "Delaware": 0.926829,
+          "Florida": 1.0,
+          "Georgia": 1.0,
+          "Hawaii": 0.904762,
+          "Idaho": 0.862069,
+          "Illinois": 0.926829,
+          "Indiana": 1.0,
+          "Iowa": 0.933333,
+          "Kansas": 0.885714,
+          "Kentucky": 0.875,
+          "Louisiana": 0.926829,
+          "Maine": 1.0,
+          "Maryland": 0.97619,
+          "Massachusetts": 0.939394,
+          "Michigan": 0.903226,
+          "Minnesota": 0.868421,
+          "Mississippi": 0.918367,
+          "Missouri": 0.833333,
+          "Montana": 0.933333,
+          "Nebraska": 0.88,
+          "Nevada": 0.944444,
+          "NewHampshire": 1.0,
+          "NewJersey": 0.818182,
+          "NewMexico": 1.0,
+          "NewYork": 0.925,
+          "NorthCarolina": 0.954545,
+          "NorthDakota": 0.761905,
+          "Ohio": 0.980392,
+          "Oklahoma": 0.892857,
+          "Oregon": 0.933333,
+          "Pennsylvania": 0.953125,
+          "RhodeIsland": 0.8,
+          "SouthCarolina": 0.926829,
+          "SouthDakota": 0.931034,
+          "Tennessee": 0.886364,
+          "Texas": 0.964286,
+          "Utah": 1.0,
+          "Vermont": 0.967742,
+          "Virginia": 0.962963,
+          "Washington": 1.0,
+          "WashingtonDC": 0.8,
+          "WestVirginia": 0.909091,
+          "Wisconsin": 0.888889,
+          "Wyoming": 1.0
+        }
+      },
+      "new": {
+        "images": 1971,
+        "top1": 0.940639,
+        "top5": 0.976154,
+        "mean_top1_confidence": 0.957825,
+        "thresholds": {
+          "0.35": {
+            "accepted": 1947,
+            "coverage": 0.987823,
+            "accepted_accuracy": 0.949153,
+            "accepted_errors": 99
+          },
+          "0.50": {
+            "accepted": 1914,
+            "coverage": 0.971081,
+            "accepted_accuracy": 0.961338,
+            "accepted_errors": 74
+          },
+          "0.60": {
+            "accepted": 1889,
+            "coverage": 0.958397,
+            "accepted_accuracy": 0.968237,
+            "accepted_errors": 60
+          },
+          "0.70": {
+            "accepted": 1857,
+            "coverage": 0.942161,
+            "accepted_accuracy": 0.978998,
+            "accepted_errors": 39
+          },
+          "0.80": {
+            "accepted": 1832,
+            "coverage": 0.929477,
+            "accepted_accuracy": 0.983624,
+            "accepted_errors": 30
+          },
+          "0.90": {
+            "accepted": 1786,
+            "coverage": 0.906139,
+            "accepted_accuracy": 0.989362,
+            "accepted_errors": 19
+          }
+        },
+        "per_class_top1": {
+          "Alabama": 0.911111,
+          "Alaska": 1.0,
+          "Arizona": 0.828571,
+          "Arkansas": 0.861111,
+          "California": 0.978723,
+          "Colorado": 0.943396,
+          "Connecticut": 0.971429,
+          "Delaware": 0.926829,
+          "Florida": 1.0,
+          "Georgia": 1.0,
+          "Hawaii": 0.952381,
+          "Idaho": 0.862069,
+          "Illinois": 0.95122,
+          "Indiana": 1.0,
+          "Iowa": 0.933333,
+          "Kansas": 0.942857,
+          "Kentucky": 0.875,
+          "Louisiana": 0.97561,
+          "Maine": 1.0,
+          "Maryland": 0.97619,
+          "Massachusetts": 0.939394,
+          "Michigan": 0.903226,
+          "Minnesota": 0.894737,
+          "Mississippi": 0.938776,
+          "Missouri": 0.833333,
+          "Montana": 0.911111,
+          "Nebraska": 0.92,
+          "Nevada": 0.944444,
+          "NewHampshire": 1.0,
+          "NewJersey": 0.878788,
+          "NewMexico": 1.0,
+          "NewYork": 0.9,
+          "NorthCarolina": 0.954545,
+          "NorthDakota": 0.857143,
+          "Ohio": 0.921569,
+          "Oklahoma": 0.892857,
+          "Oregon": 0.9,
+          "Pennsylvania": 0.953125,
+          "RhodeIsland": 0.88,
+          "SouthCarolina": 0.97561,
+          "SouthDakota": 0.965517,
+          "Tennessee": 0.931818,
+          "Texas": 0.964286,
+          "Utah": 1.0,
+          "Vermont": 0.967742,
+          "Virginia": 0.944444,
+          "Washington": 1.0,
+          "WashingtonDC": 0.9,
+          "WestVirginia": 0.954545,
+          "Wisconsin": 0.861111,
+          "Wyoming": 1.0
+        }
+      },
+      "paired": {
+        "corrected_by_new": 40,
+        "regressed_by_new": 30,
+        "net_correct_gain": 10,
+        "both_correct": 1814,
+        "both_wrong": 87
+      }
+    },
+    "road_degraded": {
+      "old": {
+        "images": 1971,
+        "top1": 0.152207,
+        "top5": 0.329782,
+        "mean_top1_confidence": 0.753838,
+        "thresholds": {
+          "0.35": {
+            "accepted": 1703,
+            "coverage": 0.864028,
+            "accepted_accuracy": 0.172049,
+            "accepted_errors": 1410
+          },
+          "0.50": {
+            "accepted": 1529,
+            "coverage": 0.775748,
+            "accepted_accuracy": 0.179856,
+            "accepted_errors": 1254
+          },
+          "0.60": {
+            "accepted": 1390,
+            "coverage": 0.705226,
+            "accepted_accuracy": 0.186331,
+            "accepted_errors": 1131
+          },
+          "0.70": {
+            "accepted": 1275,
+            "coverage": 0.64688,
+            "accepted_accuracy": 0.190588,
+            "accepted_errors": 1032
+          },
+          "0.80": {
+            "accepted": 1157,
+            "coverage": 0.587012,
+            "accepted_accuracy": 0.187554,
+            "accepted_errors": 940
+          },
+          "0.90": {
+            "accepted": 969,
+            "coverage": 0.491629,
+            "accepted_accuracy": 0.195046,
+            "accepted_errors": 780
+          }
+        },
+        "per_class_top1": {
+          "Alabama": 0.155556,
+          "Alaska": 0.185185,
+          "Arizona": 0.171429,
+          "Arkansas": 0.0,
+          "California": 0.404255,
+          "Colorado": 0.169811,
+          "Connecticut": 0.085714,
+          "Delaware": 0.219512,
+          "Florida": 0.173077,
+          "Georgia": 0.055556,
+          "Hawaii": 0.238095,
+          "Idaho": 0.172414,
+          "Illinois": 0.04878,
+          "Indiana": 0.195652,
+          "Iowa": 0.133333,
+          "Kansas": 0.028571,
+          "Kentucky": 0.025,
+          "Louisiana": 0.073171,
+          "Maine": 0.347826,
+          "Maryland": 0.103175,
+          "Massachusetts": 0.151515,
+          "Michigan": 0.129032,
+          "Minnesota": 0.078947,
+          "Mississippi": 0.285714,
+          "Missouri": 0.0,
+          "Montana": 0.177778,
+          "Nebraska": 0.2,
+          "Nevada": 0.138889,
+          "NewHampshire": 0.818182,
+          "NewJersey": 0.030303,
+          "NewMexico": 0.407407,
+          "NewYork": 0.025,
+          "NorthCarolina": 0.113636,
+          "NorthDakota": 0.0,
+          "Ohio": 0.196078,
+          "Oklahoma": 0.107143,
+          "Oregon": 0.166667,
+          "Pennsylvania": 0.140625,
+          "RhodeIsland": 0.16,
+          "SouthCarolina": 0.04878,
+          "SouthDakota": 0.137931,
+          "Tennessee": 0.0,
+          "Texas": 0.178571,
+          "Utah": 0.0625,
+          "Vermont": 0.419355,
+          "Virginia": 0.185185,
+          "Washington": 0.129032,
+          "WashingtonDC": 0.2,
+          "WestVirginia": 0.0,
+          "Wisconsin": 0.222222,
+          "Wyoming": 0.206897
+        }
+      },
+      "new": {
+        "images": 1971,
+        "top1": 0.615424,
+        "top5": 0.770675,
+        "mean_top1_confidence": 0.75205,
+        "thresholds": {
+          "0.35": {
+            "accepted": 1651,
+            "coverage": 0.837646,
+            "accepted_accuracy": 0.714113,
+            "accepted_errors": 472
+          },
+          "0.50": {
+            "accepted": 1483,
+            "coverage": 0.75241,
+            "accepted_accuracy": 0.767363,
+            "accepted_errors": 345
+          },
+          "0.60": {
+            "accepted": 1378,
+            "coverage": 0.699137,
+            "accepted_accuracy": 0.801161,
+            "accepted_errors": 274
+          },
+          "0.70": {
+            "accepted": 1283,
+            "coverage": 0.650939,
+            "accepted_accuracy": 0.830086,
+            "accepted_errors": 218
+          },
+          "0.80": {
+            "accepted": 1192,
+            "coverage": 0.604769,
+            "accepted_accuracy": 0.870805,
+            "accepted_errors": 154
+          },
+          "0.90": {
+            "accepted": 1068,
+            "coverage": 0.541857,
+            "accepted_accuracy": 0.911985,
+            "accepted_errors": 94
+          }
+        },
+        "per_class_top1": {
+          "Alabama": 0.466667,
+          "Alaska": 0.814815,
+          "Arizona": 0.485714,
+          "Arkansas": 0.444444,
+          "California": 0.617021,
+          "Colorado": 0.754717,
+          "Connecticut": 0.714286,
+          "Delaware": 0.853659,
+          "Florida": 0.673077,
+          "Georgia": 0.666667,
+          "Hawaii": 0.571429,
+          "Idaho": 0.758621,
+          "Illinois": 0.390244,
+          "Indiana": 0.565217,
+          "Iowa": 0.666667,
+          "Kansas": 0.457143,
+          "Kentucky": 0.5,
+          "Louisiana": 0.634146,
+          "Maine": 0.73913,
+          "Maryland": 0.84127,
+          "Massachusetts": 0.606061,
+          "Michigan": 0.645161,
+          "Minnesota": 0.526316,
+          "Mississippi": 0.469388,
+          "Missouri": 0.5,
+          "Montana": 0.466667,
+          "Nebraska": 0.36,
+          "Nevada": 0.611111,
+          "NewHampshire": 0.727273,
+          "NewJersey": 0.424242,
+          "NewMexico": 0.555556,
+          "NewYork": 0.575,
+          "NorthCarolina": 0.522727,
+          "NorthDakota": 0.285714,
+          "Ohio": 0.686275,
+          "Oklahoma": 0.571429,
+          "Oregon": 0.533333,
+          "Pennsylvania": 0.734375,
+          "RhodeIsland": 0.48,
+          "SouthCarolina": 0.390244,
+          "SouthDakota": 0.655172,
+          "Tennessee": 0.522727,
+          "Texas": 0.642857,
+          "Utah": 0.78125,
+          "Vermont": 0.774194,
+          "Virginia": 0.722222,
+          "Washington": 0.516129,
+          "WashingtonDC": 0.4,
+          "WestVirginia": 0.659091,
+          "Wisconsin": 0.555556,
+          "Wyoming": 1.0
+        }
+      },
+      "paired": {
+        "corrected_by_new": 930,
+        "regressed_by_new": 17,
+        "net_correct_gain": 913,
+        "both_correct": 283,
+        "both_wrong": 741
+      }
+    }
+  }
+}

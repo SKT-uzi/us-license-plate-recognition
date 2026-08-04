@@ -1,0 +1,16 @@
+sample_id,detected,exact_match,detections,valid_crops,yolo_max_confidence,ocr_score,ocr_accepted,review_required,independent_support,state_score,state_accepted,fallback_used,yolo_ms,ocr_ms,state_ms,total_ms
+1,True,True,1,1,0.8356,0.9999,True,False,3,0.7327,False,False,13.70,266.68,59.03,30.13
+2,True,False,2,2,0.6795,0.9733,True,False,2,0.8323,False,False,21.51,736.90,66.31,32.18
+3,True,True,3,3,0.7137,0.9973,True,True,1,0.7520,False,False,18.10,1400.55,31.96,28.13
+4,True,False,1,1,0.6671,0.9030,True,True,1,0.8395,False,False,17.46,435.95,58.48,28.52
+5,True,True,2,2,0.7552,0.9926,True,False,2,0.4580,False,False,12.64,761.68,65.48,19.35
+6,True,True,1,1,0.7934,0.9996,True,False,3,0.7271,False,False,13.42,325.74,46.76,28.99
+7,True,False,1,1,0.7795,0.9303,True,True,1,0.7550,False,False,17.89,416.75,58.10,34.05
+8,True,False,1,1,0.7899,0.9245,True,True,1,0.5653,False,False,12.47,380.64,57.84,27.19
+9,True,True,1,1,0.8064,0.9995,True,True,1,0.9938,True,False,14.28,678.12,63.26,32.45
+10,True,True,1,1,0.6871,0.9998,True,False,3,0.6640,False,False,14.86,293.25,53.15,33.58
+11,True,True,1,1,0.8210,0.9999,True,True,1,0.9960,False,False,14.07,402.05,54.31,32.63
+12,True,True,1,1,0.8544,0.9999,True,True,1,0.3693,False,False,13.53,587.59,54.75,31.74
+13,True,True,1,1,0.8137,0.9999,True,True,1,1.0000,True,False,14.51,564.19,60.99,33.48
+14,True,True,1,1,0.5724,0.9994,True,True,1,0.6978,False,True,139.67,410.99,57.08,179.43
+15,True,True,1,1,0.4241,0.9999,True,False,3,0.8859,True,False,18.81,350.11,59.68,48.69
