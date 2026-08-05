@@ -9,8 +9,8 @@ import sys
 from pathlib import Path
 
 
-WORKSPACE = Path(__file__).resolve().parent
-DATA_YAML = WORKSPACE / "plate_pose.yaml"
+WORKSPACE = Path(__file__).resolve().parents[1]
+DATA_YAML = WORKSPACE / "configs" / "plate_pose.yaml"
 INITIAL_MODEL = WORKSPACE / "models" / "pose_baseline.pt"
 RUNS_DIR = WORKSPACE / "runs"
 DEFAULT_RUN_NAME = "plate_pose_100epoch_baseline"

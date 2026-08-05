@@ -36,20 +36,24 @@ Detailed anonymized CSV and JSON outputs are in [`benchmarks`](benchmarks). Sour
 
 ```text
 .
-|-- app.py                         # HTTP API and comparison web demo
-|-- run_demo.py                    # Starts all three local services
-|-- ocr_service.py                 # PaddleOCR service
-|-- number_ocr_service.py          # CCT + PaddleOCR ensemble service
-|-- train_pose.py                  # Four-corner pose training
-|-- train_state_classifier.py      # 51-class state training
-|-- prepare_state_dataset.py       # Road-style augmentation utility
-|-- demo_static/index.html         # English browser UI
+|-- src/                           # Inference API and OCR services
+|   |-- app.py
+|   |-- ocr_service.py
+|   `-- number_ocr_service.py
+|-- scripts/                       # Training, data, and verification tools
+|   |-- train_pose.py
+|   |-- train_state_classifier.py
+|   |-- prepare_state_dataset.py
+|   |-- verify_install.py
+|   `-- privacy_audit.py
+|-- configs/plate_pose.yaml        # YOLO pose dataset configuration
+|-- web/index.html                 # English browser UI
 |-- models/                        # Included inference weights and hashes
 |-- benchmarks/                    # Anonymized evaluation summaries
-|-- scripts/verify_install.py      # Dependency, checksum, and model checks
-|-- scripts/privacy_audit.py       # Pre-publication privacy scan
-|-- MODEL_CARD.md                  # Performance and limitations
-`-- PRIVACY.md                     # Data-handling and release policy
+|-- docs/                          # Model, privacy, and third-party notes
+|-- run_demo.py                    # Starts all three local services
+|-- requirements.txt
+`-- LICENSE
 ```
 
 ## Quick start
@@ -139,9 +143,9 @@ Alternatively, set `PADDLEOCR_MODEL_ROOT` to a directory containing those two fo
 ## Run services independently
 
 ```bash
-python ocr_service.py --port 7862 --device cpu
-python number_ocr_service.py --port 7863 --device cpu
-python app.py --port 7860 --device 0
+python src/ocr_service.py --port 7862 --device cpu
+python src/number_ocr_service.py --port 7863 --device cpu
+python src/app.py --port 7860 --device 0
 ```
 
 ## HTTP API
@@ -159,11 +163,11 @@ The optional `confidence` form field must be between `0.01` and `0.95`.
 
 ## Train the pose model
 
-Edit `plate_pose.yaml` so `path` points to a YOLO pose dataset. Each label must contain four keypoints in this order: top-left, top-right, bottom-right, bottom-left.
+Edit `configs/plate_pose.yaml` so `path` points to a YOLO pose dataset. Each label must contain four keypoints in this order: top-left, top-right, bottom-right, bottom-left.
 
 ```bash
-python train_pose.py \
-  --data plate_pose.yaml \
+python scripts/train_pose.py \
+  --data configs/plate_pose.yaml \
   --model models/pose_baseline.pt \
   --epochs 100 \
   --imgsz 640 \
@@ -187,7 +191,7 @@ state_classifier_dataset/
 Optionally create a road-degraded training copy while preserving the clean validation and test splits:
 
 ```bash
-python prepare_state_dataset.py \
+python scripts/prepare_state_dataset.py \
   --source state_classifier_dataset \
   --output state_classifier_dataset_road_aug \
   --augment-fraction 0.75
@@ -196,7 +200,7 @@ python prepare_state_dataset.py \
 Then train:
 
 ```bash
-python train_state_classifier.py \
+python scripts/train_state_classifier.py \
   --data state_classifier_dataset_road_aug \
   --model yolov8s-cls.pt \
   --epochs 30 \
@@ -207,14 +211,14 @@ python train_state_classifier.py \
 
 ## Privacy and limitations
 
-No original training images, customer images, customer names, company names, local user paths, or raw plate identifiers are intended to be included. Uploaded demo images are processed in memory and are not saved by the normal HTTP endpoints. See [`PRIVACY.md`](PRIVACY.md) and run the privacy audit before any release:
+No original training images, customer images, customer names, company names, local user paths, or raw plate identifiers are intended to be included. Uploaded demo images are processed in memory and are not saved by the normal HTTP endpoints. See [`docs/PRIVACY.md`](docs/PRIVACY.md) and run the privacy audit before any release:
 
 ```bash
 python scripts/privacy_audit.py --deny-term "YOUR_COMPANY_NAME" --deny-term "CUSTOMER_NAME"
 ```
 
-State classification degrades on tiny, blurry, occluded, or specialty plates. OCR can confuse similar characters, and confidence values are not calibrated probabilities. Read [`MODEL_CARD.md`](MODEL_CARD.md) before relying on outputs.
+State classification degrades on tiny, blurry, occluded, or specialty plates. OCR can confuse similar characters, and confidence values are not calibrated probabilities. Read [`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) before relying on outputs.
 
 ## License and acknowledgments
 
-This repository is released under the GNU Affero General Public License v3.0. Third-party components and model formats retain their own licenses and terms; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+This repository is released under the GNU Affero General Public License v3.0. Third-party components and model formats retain their own licenses and terms; see [`docs/THIRD_PARTY_NOTICES.md`](docs/THIRD_PARTY_NOTICES.md).

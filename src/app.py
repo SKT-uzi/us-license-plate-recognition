@@ -24,12 +24,12 @@ import numpy as np
 from PIL import Image, ImageOps
 
 
-WORKSPACE = Path(__file__).resolve().parent
+WORKSPACE = Path(__file__).resolve().parents[1]
 MODELS_DIR = WORKSPACE / "models"
 ORIGINAL_MODEL = MODELS_DIR / "pose_baseline.pt"
 NEW_MODEL = MODELS_DIR / "pose_finetuned.pt"
 STATE_MODEL = MODELS_DIR / "state_classifier.pt"
-INDEX_HTML = WORKSPACE / "demo_static" / "index.html"
+INDEX_HTML = WORKSPACE / "web" / "index.html"
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
 KEYPOINT_NAMES = ("top-left", "top-right", "bottom-right", "bottom-left")
 DEFAULT_OCR_URL = "http://127.0.0.1:7862"

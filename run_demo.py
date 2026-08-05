@@ -71,7 +71,7 @@ def main() -> None:
     try:
         ocr_command = [
             str(args.ocr_python),
-            str(ROOT / "ocr_service.py"),
+            str(ROOT / "src" / "ocr_service.py"),
             "--host",
             args.host,
             "--port",
@@ -81,7 +81,7 @@ def main() -> None:
         ]
         number_ocr_command = [
             str(args.ocr_python),
-            str(ROOT / "number_ocr_service.py"),
+            str(ROOT / "src" / "number_ocr_service.py"),
             "--host",
             args.host,
             "--port",
@@ -107,7 +107,7 @@ def main() -> None:
 
         app_command = [
             sys.executable,
-            str(ROOT / "app.py"),
+            str(ROOT / "src" / "app.py"),
             "--host",
             args.host,
             "--port",

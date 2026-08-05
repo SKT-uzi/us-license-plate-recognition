@@ -18,7 +18,7 @@ import numpy as np
 from PIL import Image, ImageOps
 
 
-WORKSPACE = Path(__file__).resolve().parent
+WORKSPACE = Path(__file__).resolve().parents[1]
 DEFAULT_MODEL_NAME = "en_PP-OCRv4_mobile_rec"
 MODEL_ROOT = Path(
     os.environ.get("PADDLEOCR_MODEL_ROOT", WORKSPACE / "models" / "paddleocr")

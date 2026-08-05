@@ -21,7 +21,7 @@ from PIL import Image, ImageOps
 from ocr_service import PlateOCREngine
 
 
-WORKSPACE = Path(__file__).resolve().parent
+WORKSPACE = Path(__file__).resolve().parents[1]
 FAST_MODEL_DIR = WORKSPACE / "models"
 FAST_MODEL_PATH = FAST_MODEL_DIR / "cct_s_v2_global.onnx"
 FAST_CONFIG_PATH = FAST_MODEL_DIR / "cct_s_v2_global_plate_config.yaml"

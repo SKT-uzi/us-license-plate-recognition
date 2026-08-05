@@ -23,7 +23,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageOps
 
 
-WORKSPACE = Path(__file__).resolve().parent
+WORKSPACE = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = WORKSPACE / "state_classifier_dataset"
 DEFAULT_OUTPUT = WORKSPACE / "state_classifier_dataset_road_aug"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}

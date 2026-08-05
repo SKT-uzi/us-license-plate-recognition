@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 
-WORKSPACE = Path(__file__).resolve().parent
+WORKSPACE = Path(__file__).resolve().parents[1]
 DEFAULT_DATASET = WORKSPACE / "state_classifier_dataset"
 DEFAULT_MODEL = "yolov8s-cls.pt"
 RUNS_DIR = WORKSPACE / "runs"
